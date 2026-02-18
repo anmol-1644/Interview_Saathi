@@ -149,4 +149,4 @@ def analyze():
 # ─────────────────────────────────────────────
 if __name__ == "__main__":
     print("🎤 Interview Saathi backend starting on http://localhost:5000")
-    app.run(debug=True, port=5000, host="0.0.0.0")
+    app.run(debug=True, port=10000, host="0.0.0.0")
