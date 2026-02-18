@@ -35,7 +35,7 @@ const ROLES = [
     border: 'rgba(245,158,11,0.25)',
   },
 ]
-const API_BASE_URL = "https://interview-saathi-backend.onrender.com";
+const API_BASE_URL = "https://interview-saathi-i2be.onrender.com";
 export default function InterviewPage() {
   const navigate = useNavigate()
   const location = useLocation()
