@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Global token system ── */
+:root {
+  --saathi-primary: #3b72fb;
+  --saathi-primary-glow: rgba(59, 114, 251, 0.35);
+  --saathi-dark: #0b0f1a;
+  --saathi-card: rgba(15, 20, 35, 0.8);
+  --saathi-border: rgba(255, 255, 255, 0.08);
+  --saathi-text-muted: #6b7a9e;
+}
+
+/* ── Base styles ── */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #080b14;
+  color: #e2e6f3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* ── Typography ── */
+.font-display { font-family: 'Space Grotesk', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0b0f1a; }
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 114, 251, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(59, 114, 251, 0.7); }
+
+/* ── Noise texture overlay for depth ── */
+.noise-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── Glow effects ── */
+.glow-blue {
+  box-shadow: 0 0 30px var(--saathi-primary-glow),
+              0 0 60px rgba(59, 114, 251, 0.1);
+}
+
+.glow-text {
+  text-shadow: 0 0 40px rgba(59, 114, 251, 0.5);
+}
+
+/* ── Glass card ── */
+.glass-card {
+  background: rgba(13, 18, 32, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #5994ff 0%, #3b72fb 40%, #8ebbff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Button primary ── */
+.btn-primary {
+  background: linear-gradient(135deg, #3b72fb 0%, #1f4ef0 100%);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.01em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(59, 114, 251, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(59, 114, 251, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:active { transform: translateY(0); }
+
+/* ── Recording pulse ring ── */
+.recording-pulse {
+  animation: recordingRing 1.4s ease-in-out infinite;
+}
+
+/* ── Score progress bar animation ── */
+@keyframes growBar {
+  from { width: 0%; }
+  to { width: var(--target-width, 70%); }
+}
+
+.progress-bar-animate {
+  animation: growBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ── Stagger fade-up animation ── */
+.animate-stagger > * {
+  opacity: 0;
+  animation: fadeUp 0.5s ease-out forwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* ── XP bar shimmer ── */
+.xp-bar-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(59, 114, 251, 0.8) 0%,
+    rgba(142, 187, 255, 1) 50%,
+    rgba(59, 114, 251, 0.8) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ── Score ring ── */
+.score-ring {
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Mobile nav spacing ── */
+@media (max-width: 768px) {
+  .hero-title { font-size: clamp(2.5rem, 10vw, 5rem); }
+}
