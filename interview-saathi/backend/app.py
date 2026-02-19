@@ -1,6 +1,6 @@
 """
-Interview Saathi - Flask Backend
-AI-powered mock interview platform for Hindi/Awadhi/Bhojpuri speakers
+Interview Saathi - Flask Backend (Fixed Version)
+AI-powered mock interview platform
 """
 
 import os
@@ -9,6 +9,7 @@ import tempfile
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
+from groq import Groq
 
 # Logic imports
 from groq_logic import analyze_interview_response, generate_interview_question
@@ -17,27 +18,24 @@ from groq_logic import analyze_interview_response, generate_interview_question
 load_dotenv()
 
 app = Flask(__name__)
-
-# CORS setup: Isse frontend (Vercel) backend se baat kar payega
 CORS(app)
 
-# ─────────────────────────────────────────────
-# 1. Health check - Testing ke liye
-# ─────────────────────────────────────────────
+# Groq Client setup for Transcription
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
 @app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "message": "Interview Saathi backend running!"})
 
-# ─────────────────────────────────────────────
-# 2. Generate interview question based on role
-# ─────────────────────────────────────────────
-@app.route("/api/question", methods=["POST"])
+@app.route("/api/question", methods=["GET", "POST"])
 def get_question():
-    data = request.get_json()
-    if not data or "role" not in data:
-        return jsonify({"error": "Missing 'role' in request body"}), 400
-
-    role = data["role"]
+    # Handling both GET and POST to avoid "pending" state in frontend
+    role = "Software Engineer" # Default
+    if request.method == "POST":
+        data = request.get_json()
+        if data and "role" in data:
+            role = data["role"]
+    
     try:
         question = generate_interview_question(role)
         return jsonify({"question": question})
@@ -45,9 +43,6 @@ def get_question():
         print(f"Error generating question: {e}")
         return jsonify({"error": str(e)}), 500
 
-# ─────────────────────────────────────────────
-# 3. Transcribe audio + Analyze response
-# ─────────────────────────────────────────────
 @app.route("/api/analyze", methods=["POST"])
 def analyze():
     if "audio" not in request.files:
@@ -62,8 +57,15 @@ def analyze():
         tmp_path = tmp.name
 
     try:
-        # Step 1: Mock transcript (Kyuki whisper_logic abhi commented hai)
-        transcript = "This is a temporary test answer for debugging."
+        # Step 1: REAL Transcription using Groq Whisper (Not local model)
+        # This prevents Render from crashing due to low RAM (512MB)
+        with open(tmp_path, "rb") as file:
+            transcription = client.audio.transcriptions.create(
+                file=(tmp_path, file.read()),
+                model="whisper-large-v3",
+                response_format="text",
+            )
+        transcript = transcription
         
         # Step 2: Analyze transcript with Groq
         analysis = analyze_interview_response(
@@ -105,11 +107,6 @@ def analyze():
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
-# ─────────────────────────────────────────────
-# 4. Run server - Render Port Fix
-# ─────────────────────────────────────────────
 if __name__ == "__main__":
-    # Render hamesha PORT environment variable deta hai (usually 10000)
     port = int(os.environ.get("PORT", 10000))
-    print(f"🎤 Interview Saathi backend starting on port {port}")
     app.run(host="0.0.0.0", port=port)
